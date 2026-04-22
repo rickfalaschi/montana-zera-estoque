@@ -165,6 +165,8 @@ export function AdminEditClerkForm({
               </p>
               <p className="text-xs text-zinc-500">
                 Gerentes cadastram vendas e aprovam outros balconistas.
+                Cada loja tem apenas 1 gerente — ao marcar esta opção, o
+                gerente atual (se houver) é rebaixado automaticamente.
               </p>
             </div>
           </label>

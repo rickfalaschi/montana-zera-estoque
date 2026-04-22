@@ -402,24 +402,18 @@ export async function adminUpdateClerk(
     }
   }
 
-  // Cada loja só pode ter 1 gerente — se está promovendo, checar se já existe outro.
+  // Cada loja só pode ter 1 gerente — promover outro rebaixa o atual automaticamente.
   if (!clerk.isManager && wantsManager) {
-    const [existingManager] = await db
-      .select({ id: clerks.id, name: clerks.name })
-      .from(clerks)
+    await db
+      .update(clerks)
+      .set({ isManager: false })
       .where(
         and(
           eq(clerks.storeId, clerk.storeId),
           eq(clerks.isManager, true),
           ne(clerks.id, clerkId)
         )
-      )
-      .limit(1);
-    if (existingManager) {
-      return {
-        error: `Já existe um gerente na loja (${existingManager.name}). Rebaixe o gerente atual antes de promover outro.`,
-      };
-    }
+      );
   }
 
   const [dup] = await db
