@@ -21,23 +21,34 @@ export const metadata = { title: "Cashback do mês — Admin" };
 
 export default async function MonthDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ year: string; month: string }>;
+  searchParams: Promise<{ status?: string }>;
 }) {
   const { year, month } = await params;
+  const sp = await searchParams;
   const y = Number(year);
   const m = Number(month);
   if (!Number.isFinite(y) || !Number.isFinite(m) || m < 1 || m > 12) notFound();
 
-  const rows = await getCashbacksForMonth(y, m);
-  if (rows.length === 0) notFound();
+  const allRows = await getCashbacksForMonth(y, m);
+  if (allRows.length === 0) notFound();
 
-  const isClosed = rows[0]?.isClosed ?? false;
-  const total = rows.reduce((acc, r) => acc + r.amountCents, 0);
-  const paid = rows.filter((r) => r.isPaid).reduce((acc, r) => acc + r.amountCents, 0);
+  const isClosed = allRows[0]?.isClosed ?? false;
+  const total = allRows.reduce((acc, r) => acc + r.amountCents, 0);
+  const paid = allRows.filter((r) => r.isPaid).reduce((acc, r) => acc + r.amountCents, 0);
   const pending = total - paid;
-  const paidCount = rows.filter((r) => r.isPaid).length;
-  const pendingCount = rows.length - paidCount;
+  const paidCount = allRows.filter((r) => r.isPaid).length;
+  const pendingCount = allRows.length - paidCount;
+
+  const filter = sp.status === "pending" || sp.status === "paid" ? sp.status : "all";
+  const rows =
+    filter === "pending"
+      ? allRows.filter((r) => !r.isPaid)
+      : filter === "paid"
+        ? allRows.filter((r) => r.isPaid)
+        : allRows;
 
   return (
     <div className="space-y-6">
@@ -90,13 +101,79 @@ export default async function MonthDetailPage({
       </section>
 
       <section className={card}>
-        <h2 className={sectionTitle}>Balconistas</h2>
-        {!isClosed && (
-          <p className="mt-1 text-sm text-zinc-500">
-            Mês ainda em andamento — os valores podem mudar até o fechamento. Os
-            botões de pagamento só ficam ativos depois do dia 1º do próximo mês.
-          </p>
-        )}
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className={sectionTitle}>Balconistas</h2>
+            {!isClosed && (
+              <p className="mt-1 text-sm text-zinc-500">
+                Mês ainda em andamento — os valores podem mudar até o fechamento.
+                Os botões de pagamento só ficam ativos depois do dia 1º do próximo
+                mês.
+              </p>
+            )}
+            {isClosed && (
+              <p className="mt-1 text-sm text-zinc-500">
+                Mostrando {rows.length} de {allRows.length} balconista
+                {allRows.length === 1 ? "" : "s"}.
+              </p>
+            )}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <nav
+              aria-label="Filtrar por status"
+              className="flex items-center gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800"
+            >
+              {(
+                [
+                  { key: "all", label: `Todos (${allRows.length})` },
+                  { key: "pending", label: `Pendentes (${pendingCount})` },
+                  { key: "paid", label: `Pagos (${paidCount})` },
+                ] as const
+              ).map((opt) => {
+                const active = filter === opt.key;
+                const href =
+                  opt.key === "all"
+                    ? `/admin/cashbacks/${y}/${m}`
+                    : `/admin/cashbacks/${y}/${m}?status=${opt.key}`;
+                return (
+                  <Link
+                    key={opt.key}
+                    href={href}
+                    className={
+                      active
+                        ? "rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-white"
+                        : "rounded-md px-3 py-1.5 text-xs font-semibold text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+                    }
+                  >
+                    {opt.label}
+                  </Link>
+                );
+              })}
+            </nav>
+            <a
+              href={`/admin/cashbacks/${y}/${m}/export${filter !== "all" ? `?status=${filter}` : ""}`}
+              className="inline-flex h-8 items-center justify-center gap-1.5 rounded-md bg-[#027D04] px-3 text-xs font-semibold text-white transition hover:bg-[#015701]"
+              title="Baixar lista filtrada em CSV (abre no Excel)"
+            >
+              <svg
+                width={14}
+                height={14}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Exportar
+            </a>
+          </div>
+        </div>
         <div className="mt-4 overflow-x-auto">
           <table className={tableClass}>
             <thead>
@@ -112,6 +189,13 @@ export default async function MonthDetailPage({
               </tr>
             </thead>
             <tbody>
+              {rows.length === 0 && (
+                <tr>
+                  <td className={tdClass} colSpan={8}>
+                    Nenhum balconista {filter === "pending" ? "pendente" : "pago"} neste período.
+                  </td>
+                </tr>
+              )}
               {rows.map((r) => {
                 const vendasHref = `/admin/vendas?q=${encodeURIComponent(
                   `Balconista: ${r.clerkName} — ${formatCpf(r.clerkCpf)}`

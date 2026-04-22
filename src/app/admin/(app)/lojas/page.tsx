@@ -97,7 +97,14 @@ export default async function AdminStoresPage({
               )}
               {rows.map((r) => (
                 <tr key={r.id} className={trClass}>
-                  <td className={tdClass}>{r.name}</td>
+                  <td className={tdClass}>
+                    <Link
+                      href={`/admin/lojas/${r.id}`}
+                      className="font-semibold text-zinc-900 hover:text-[#A80000] hover:underline dark:text-white"
+                    >
+                      {r.name}
+                    </Link>
+                  </td>
                   <td className={tdClass}>{formatCnpj(r.cnpj)}</td>
                   <td className={tdClass}>
                     {r.manager ? (
@@ -113,6 +120,12 @@ export default async function AdminStoresPage({
                   <td className={tdClass}>{formatDate(r.createdAt)}</td>
                   <td className={tdClass}>
                     <div className="flex justify-end gap-2">
+                      <Link
+                        href={`/admin/lojas/${r.id}`}
+                        className={`${buttonSecondary} h-8 px-3 text-xs`}
+                      >
+                        Ver
+                      </Link>
                       <Link
                         href={`/admin/lojas/${r.id}/editar`}
                         className={`${buttonSecondary} h-8 px-3 text-xs`}
