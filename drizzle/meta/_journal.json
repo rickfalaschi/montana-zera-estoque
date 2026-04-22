@@ -15,6 +15,13 @@
       "when": 1776889663757,
       "tag": "0001_plain_taskmaster",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1776890228585,
+      "tag": "0002_brief_expediter",
+      "breakpoints": true
     }
   ]
 }

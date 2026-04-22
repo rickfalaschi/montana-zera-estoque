@@ -25,6 +25,12 @@ export function formatPhone(value: string): string {
   return value;
 }
 
+export function formatCep(value: string): string {
+  const d = onlyDigits(value);
+  if (d.length !== 8) return value;
+  return `${d.slice(0, 5)}-${d.slice(5)}`;
+}
+
 export function formatBirthDate(value: string | null | undefined): string {
   if (!value) return "";
   // Aceita "YYYY-MM-DD" (formato armazenado)

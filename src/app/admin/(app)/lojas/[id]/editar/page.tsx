@@ -19,7 +19,17 @@ export default async function EditStorePage({
   if (!Number.isFinite(storeId)) notFound();
 
   const [store] = await db
-    .select({ id: stores.id, name: stores.name, cnpj: stores.cnpj })
+    .select({
+      id: stores.id,
+      name: stores.name,
+      cnpj: stores.cnpj,
+      legalName: stores.legalName,
+      address: stores.address,
+      city: stores.city,
+      state: stores.state,
+      zipcode: stores.zipcode,
+      phone: stores.phone,
+    })
     .from(stores)
     .where(eq(stores.id, storeId))
     .limit(1);
@@ -45,7 +55,16 @@ export default async function EditStorePage({
 
       <EditStoreForm
         storeId={store.id}
-        initial={{ name: store.name, cnpj: store.cnpj }}
+        initial={{
+          name: store.name,
+          cnpj: store.cnpj,
+          legalName: store.legalName,
+          address: store.address,
+          city: store.city,
+          state: store.state,
+          zipcode: store.zipcode,
+          phone: store.phone,
+        }}
       />
     </div>
   );

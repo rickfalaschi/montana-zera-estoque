@@ -16,6 +16,12 @@ export const stores = pgTable("stores", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   cnpj: text("cnpj").notNull().unique(),
+  legalName: text("legal_name"),
+  address: text("address"),
+  city: text("city"),
+  state: text("state"),
+  zipcode: text("zipcode"),
+  phone: text("phone"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

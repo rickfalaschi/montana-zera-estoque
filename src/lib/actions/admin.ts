@@ -42,6 +42,23 @@ function normalizeRg(value: string | undefined): string | null {
   return trimmed && trimmed.length > 0 ? trimmed : null;
 }
 
+function normalizeText(value: string | undefined): string | null {
+  const trimmed = value?.trim();
+  return trimmed && trimmed.length > 0 ? trimmed : null;
+}
+
+function normalizeUf(value: string | undefined): string | null {
+  const trimmed = value?.trim().toUpperCase();
+  if (!trimmed || !/^[A-Z]{2}$/.test(trimmed)) return null;
+  return trimmed;
+}
+
+function normalizeCep(value: string | undefined): string | null {
+  if (!value) return null;
+  const digits = onlyDigits(value);
+  return digits.length === 8 ? digits : null;
+}
+
 export type AdminFormState = {
   error?: string;
   fieldErrors?: Record<string, string[] | undefined>;
@@ -56,7 +73,13 @@ export async function createStoreWithManager(
   await requireAdmin();
   const parsed = storeCreateSchema.safeParse({
     name: formData.get("name"),
+    legalName: formData.get("legalName"),
     cnpj: formData.get("cnpj"),
+    address: formData.get("address"),
+    city: formData.get("city"),
+    state: formData.get("state"),
+    zipcode: formData.get("zipcode"),
+    phone: formData.get("phone"),
     managerName: formData.get("managerName"),
     managerEmail: formData.get("managerEmail"),
     managerCpf: formData.get("managerCpf"),
@@ -89,7 +112,16 @@ export async function createStoreWithManager(
   const hash = await bcrypt.hash(data.managerPassword, 10);
   const [store] = await db
     .insert(stores)
-    .values({ name: data.name, cnpj: data.cnpj })
+    .values({
+      name: data.name,
+      legalName: data.legalName,
+      cnpj: data.cnpj,
+      address: data.address,
+      city: data.city,
+      state: data.state,
+      zipcode: data.zipcode,
+      phone: data.phone,
+    })
     .returning({ id: stores.id });
 
   await db.insert(clerks).values({
@@ -115,6 +147,12 @@ export async function updateStore(
   const parsed = storeUpdateSchema.safeParse({
     name: formData.get("name"),
     cnpj: formData.get("cnpj"),
+    legalName: formData.get("legalName"),
+    address: formData.get("address"),
+    city: formData.get("city"),
+    state: formData.get("state"),
+    zipcode: formData.get("zipcode"),
+    phone: formData.get("phone"),
   });
   if (!parsed.success) {
     return { fieldErrors: parsed.error.flatten().fieldErrors };
@@ -129,7 +167,16 @@ export async function updateStore(
   }
   await db
     .update(stores)
-    .set({ name: parsed.data.name, cnpj: parsed.data.cnpj })
+    .set({
+      name: parsed.data.name,
+      cnpj: parsed.data.cnpj,
+      legalName: normalizeText(parsed.data.legalName),
+      address: normalizeText(parsed.data.address),
+      city: normalizeText(parsed.data.city),
+      state: normalizeUf(parsed.data.state),
+      zipcode: normalizeCep(parsed.data.zipcode),
+      phone: normalizePhone(parsed.data.phone),
+    })
     .where(eq(stores.id, storeId));
   revalidatePath("/admin/lojas");
   redirect("/admin/lojas");

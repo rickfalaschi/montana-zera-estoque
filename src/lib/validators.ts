@@ -18,6 +18,19 @@ const phoneSchema = z
     message: "Telefone deve ter 10 ou 11 dígitos (com DDD)",
   });
 
+const cepSchema = z
+  .string()
+  .transform((v) => onlyDigits(v))
+  .refine((v) => v.length === 8, { message: "CEP deve ter 8 dígitos" });
+
+const ufSchema = z
+  .string()
+  .trim()
+  .transform((v) => v.toUpperCase())
+  .refine((v) => /^[A-Z]{2}$/.test(v), {
+    message: "UF deve ter 2 letras (ex: SP, RJ)",
+  });
+
 const birthDateSchema = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/, "Informe a data de nascimento")
@@ -51,8 +64,14 @@ export const loginSchema = z.object({
 });
 
 export const storeCreateSchema = z.object({
-  name: z.string().trim().min(2, "Informe o nome da loja"),
+  name: z.string().trim().min(2, "Informe o nome fantasia"),
+  legalName: z.string().trim().min(2, "Informe a razão social"),
   cnpj: cnpjSchema,
+  address: z.string().trim().min(5, "Informe o endereço"),
+  city: z.string().trim().min(2, "Informe a cidade"),
+  state: ufSchema,
+  zipcode: cepSchema,
+  phone: phoneSchema,
   managerName: z.string().trim().min(2, "Informe o nome do gerente"),
   managerEmail: z.string().trim().toLowerCase().email("Email inválido"),
   managerCpf: cpfSchema,
@@ -99,8 +118,19 @@ export const clerkUpdateSchema = z.object({
 });
 
 export const storeUpdateSchema = z.object({
-  name: z.string().trim().min(2, "Informe o nome da loja"),
+  name: z.string().trim().min(2, "Informe o nome fantasia"),
   cnpj: cnpjSchema,
+  legalName: z.string().trim().optional().or(z.literal("")),
+  address: z.string().trim().optional().or(z.literal("")),
+  city: z.string().trim().optional().or(z.literal("")),
+  state: z
+    .string()
+    .trim()
+    .transform((v) => v.toUpperCase())
+    .optional()
+    .or(z.literal("")),
+  zipcode: z.string().trim().optional().or(z.literal("")),
+  phone: z.string().trim().optional().or(z.literal("")),
 });
 
 export const adminCreateSchema = z.object({
