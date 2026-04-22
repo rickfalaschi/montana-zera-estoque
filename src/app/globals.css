@@ -10,6 +10,15 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Identidade Zera Estoque */
+  --color-brand-red: #a80000;
+  --color-brand-red-dark: #5a0000;
+  --color-brand-red-deep: #2c0000;
+  --color-brand-green: #027d04;
+  --color-brand-green-dark: #015701;
+  --color-brand-yellow: #ffbe00;
+  --color-brand-brown: #4a1f0b;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -17,10 +26,4 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
