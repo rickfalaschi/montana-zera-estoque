@@ -2,6 +2,7 @@ import { relations, sql } from "drizzle-orm";
 import {
   boolean,
   check,
+  date,
   index,
   integer,
   pgTable,
@@ -27,6 +28,9 @@ export const clerks = pgTable(
     name: text("name").notNull(),
     email: text("email").notNull().unique(),
     cpf: text("cpf").notNull().unique(),
+    rg: text("rg"),
+    phone: text("phone"),
+    birthDate: date("birth_date", { mode: "string" }),
     passwordHash: text("password_hash").notNull(),
     storeId: integer("store_id")
       .notNull()

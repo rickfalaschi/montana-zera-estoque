@@ -11,10 +11,36 @@ const cnpjSchema = z
   .transform((v) => onlyDigits(v))
   .refine((v) => v.length === 14, { message: "CNPJ deve ter 14 dígitos" });
 
+const phoneSchema = z
+  .string()
+  .transform((v) => onlyDigits(v))
+  .refine((v) => v.length === 10 || v.length === 11, {
+    message: "Telefone deve ter 10 ou 11 dígitos (com DDD)",
+  });
+
+const birthDateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Informe a data de nascimento")
+  .refine(
+    (v) => {
+      const d = new Date(`${v}T00:00:00`);
+      if (Number.isNaN(d.getTime())) return false;
+      const now = new Date();
+      if (d > now) return false;
+      const ageYears =
+        (now.getTime() - d.getTime()) / (365.25 * 24 * 60 * 60 * 1000);
+      return ageYears >= 14 && ageYears <= 110;
+    },
+    { message: "Data de nascimento inválida (idade entre 14 e 110 anos)" }
+  );
+
 export const clerkSignupSchema = z.object({
   name: z.string().trim().min(2, "Informe o nome"),
   email: z.string().trim().toLowerCase().email("Email inválido"),
   cpf: cpfSchema,
+  rg: z.string().trim().min(4, "Informe o RG").max(30, "RG muito longo"),
+  phone: phoneSchema,
+  birthDate: birthDateSchema,
   storeCnpj: cnpjSchema,
   password: z.string().min(6, "Senha com no mínimo 6 caracteres"),
 });
@@ -62,6 +88,14 @@ export const clerkUpdateSchema = z.object({
   name: z.string().trim().min(2, "Informe o nome"),
   email: z.string().trim().toLowerCase().email("Email inválido"),
   cpf: cpfSchema,
+  rg: z
+    .string()
+    .trim()
+    .max(30, "RG muito longo")
+    .optional()
+    .or(z.literal("")),
+  phone: z.string().trim().optional().or(z.literal("")),
+  birthDate: z.string().trim().optional().or(z.literal("")),
 });
 
 export const storeUpdateSchema = z.object({

@@ -3,6 +3,7 @@
 import { useActionState, useMemo } from "react";
 import { adminUpdateClerk, type AdminFormState } from "@/lib/actions/admin";
 import { buttonPrimary, card, inputClass, labelClass } from "@/lib/ui";
+import { formatPhone } from "@/lib/format";
 
 export function AdminEditClerkForm({
   clerkId,
@@ -13,6 +14,9 @@ export function AdminEditClerkForm({
     name: string;
     email: string;
     cpf: string;
+    rg: string | null;
+    phone: string | null;
+    birthDate: string | null;
     pixKey: string | null;
     isManager: boolean;
     isApproved: boolean;
@@ -79,6 +83,54 @@ export function AdminEditClerkForm({
             )}
           </div>
           <div>
+            <label className={labelClass} htmlFor="rg">
+              RG
+            </label>
+            <input
+              className={inputClass}
+              id="rg"
+              name="rg"
+              defaultValue={initial.rg ?? ""}
+              placeholder="Número do RG"
+            />
+            {state?.fieldErrors?.rg && (
+              <p className="mt-1 text-xs text-red-600">{state.fieldErrors.rg[0]}</p>
+            )}
+          </div>
+          <div>
+            <label className={labelClass} htmlFor="phone">
+              Telefone
+            </label>
+            <input
+              className={inputClass}
+              id="phone"
+              name="phone"
+              type="tel"
+              defaultValue={initial.phone ? formatPhone(initial.phone) : ""}
+              placeholder="(XX) 9XXXX-XXXX"
+            />
+            {state?.fieldErrors?.phone && (
+              <p className="mt-1 text-xs text-red-600">{state.fieldErrors.phone[0]}</p>
+            )}
+          </div>
+          <div>
+            <label className={labelClass} htmlFor="birthDate">
+              Data de nascimento
+            </label>
+            <input
+              className={inputClass}
+              id="birthDate"
+              name="birthDate"
+              type="date"
+              defaultValue={initial.birthDate ?? ""}
+            />
+            {state?.fieldErrors?.birthDate && (
+              <p className="mt-1 text-xs text-red-600">
+                {state.fieldErrors.birthDate[0]}
+              </p>
+            )}
+          </div>
+          <div className="md:col-span-2">
             <label className={labelClass} htmlFor="pixKey">
               Chave Pix
             </label>

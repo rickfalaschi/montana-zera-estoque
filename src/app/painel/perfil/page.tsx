@@ -1,6 +1,11 @@
 import { requireClerk } from "@/lib/dal";
 import { card, eyebrow, sectionTitle } from "@/lib/ui";
-import { formatCnpj, formatCpf } from "@/lib/format";
+import {
+  formatBirthDate,
+  formatCnpj,
+  formatCpf,
+  formatPhone,
+} from "@/lib/format";
 import { ProfileForm } from "./profile-form";
 
 export const metadata = { title: "Meu perfil — Zera Estoque" };
@@ -30,6 +35,15 @@ export default async function ProfilePage() {
           <Field label="Nome" value={clerk.name} />
           <Field label="Email" value={clerk.email} />
           <Field label="CPF" value={formatCpf(clerk.cpf)} />
+          <Field label="RG" value={clerk.rg ?? "—"} />
+          <Field
+            label="Telefone"
+            value={clerk.phone ? formatPhone(clerk.phone) : "—"}
+          />
+          <Field
+            label="Data de nascimento"
+            value={clerk.birthDate ? formatBirthDate(clerk.birthDate) : "—"}
+          />
           <Field label="Papel" value={clerk.isManager ? "Gerente" : "Balconista"} />
           <Field label="Loja" value={clerk.storeName} />
           <Field label="CNPJ da loja" value={formatCnpj(clerk.storeCnpj)} />

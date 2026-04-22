@@ -26,6 +26,9 @@ export default async function EditClerkPage({
       name: clerks.name,
       email: clerks.email,
       cpf: clerks.cpf,
+      rg: clerks.rg,
+      phone: clerks.phone,
+      birthDate: clerks.birthDate,
       isManager: clerks.isManager,
       isApproved: clerks.isApproved,
     })
@@ -57,7 +60,14 @@ export default async function EditClerkPage({
       <section className={card}>
         <EditClerkForm
           clerkId={clerk.id}
-          initial={{ name: clerk.name, email: clerk.email, cpf: clerk.cpf }}
+          initial={{
+            name: clerk.name,
+            email: clerk.email,
+            cpf: clerk.cpf,
+            rg: clerk.rg,
+            phone: clerk.phone,
+            birthDate: clerk.birthDate,
+          }}
         />
       </section>
     </div>

@@ -26,20 +26,72 @@ export function SignupForm() {
           <p className="mt-1 text-xs text-red-600">{state.fieldErrors.email[0]}</p>
         )}
       </div>
-      <div>
-        <label className={labelClass} htmlFor="cpf">
-          CPF
-        </label>
-        <input
-          className={inputClass}
-          id="cpf"
-          name="cpf"
-          placeholder="000.000.000-00"
-          required
-        />
-        {state?.fieldErrors?.cpf && (
-          <p className="mt-1 text-xs text-red-600">{state.fieldErrors.cpf[0]}</p>
-        )}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label className={labelClass} htmlFor="cpf">
+            CPF
+          </label>
+          <input
+            className={inputClass}
+            id="cpf"
+            name="cpf"
+            placeholder="000.000.000-00"
+            required
+          />
+          {state?.fieldErrors?.cpf && (
+            <p className="mt-1 text-xs text-red-600">{state.fieldErrors.cpf[0]}</p>
+          )}
+        </div>
+        <div>
+          <label className={labelClass} htmlFor="rg">
+            RG
+          </label>
+          <input
+            className={inputClass}
+            id="rg"
+            name="rg"
+            placeholder="Número do RG"
+            required
+          />
+          {state?.fieldErrors?.rg && (
+            <p className="mt-1 text-xs text-red-600">{state.fieldErrors.rg[0]}</p>
+          )}
+        </div>
+      </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label className={labelClass} htmlFor="phone">
+            Telefone
+          </label>
+          <input
+            className={inputClass}
+            id="phone"
+            name="phone"
+            type="tel"
+            placeholder="(XX) 9XXXX-XXXX"
+            required
+          />
+          {state?.fieldErrors?.phone && (
+            <p className="mt-1 text-xs text-red-600">{state.fieldErrors.phone[0]}</p>
+          )}
+        </div>
+        <div>
+          <label className={labelClass} htmlFor="birthDate">
+            Data de nascimento
+          </label>
+          <input
+            className={inputClass}
+            id="birthDate"
+            name="birthDate"
+            type="date"
+            required
+          />
+          {state?.fieldErrors?.birthDate && (
+            <p className="mt-1 text-xs text-red-600">
+              {state.fieldErrors.birthDate[0]}
+            </p>
+          )}
+        </div>
       </div>
       <div>
         <label className={labelClass} htmlFor="storeCnpj">

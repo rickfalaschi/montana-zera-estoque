@@ -22,13 +22,17 @@ export async function signupClerk(
     name: formData.get("name"),
     email: formData.get("email"),
     cpf: formData.get("cpf"),
+    rg: formData.get("rg"),
+    phone: formData.get("phone"),
+    birthDate: formData.get("birthDate"),
     storeCnpj: formData.get("storeCnpj"),
     password: formData.get("password"),
   });
   if (!parsed.success) {
     return { fieldErrors: parsed.error.flatten().fieldErrors };
   }
-  const { name, email, cpf, storeCnpj, password } = parsed.data;
+  const { name, email, cpf, rg, phone, birthDate, storeCnpj, password } =
+    parsed.data;
 
   const [store] = await db
     .select({ id: stores.id })
@@ -55,6 +59,9 @@ export async function signupClerk(
     name,
     email,
     cpf,
+    rg,
+    phone,
+    birthDate,
     passwordHash: hash,
     storeId: store.id,
     isManager: false,

@@ -11,6 +11,9 @@ export type ClerkUser = {
   name: string;
   email: string;
   cpf: string;
+  rg: string | null;
+  phone: string | null;
+  birthDate: string | null;
   pixKey: string | null;
   storeId: number;
   storeName: string;
@@ -35,6 +38,9 @@ export const getCurrentClerk = cache(async (): Promise<ClerkUser | null> => {
       name: clerks.name,
       email: clerks.email,
       cpf: clerks.cpf,
+      rg: clerks.rg,
+      phone: clerks.phone,
+      birthDate: clerks.birthDate,
       pixKey: clerks.pixKey,
       storeId: clerks.storeId,
       isManager: clerks.isManager,

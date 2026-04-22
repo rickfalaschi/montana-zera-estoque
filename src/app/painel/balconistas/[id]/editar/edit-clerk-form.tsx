@@ -6,13 +6,21 @@ import {
   type ClerkUpdateFormState,
 } from "@/lib/actions/clerks";
 import { buttonPrimary, inputClass, labelClass } from "@/lib/ui";
+import { formatPhone } from "@/lib/format";
 
 export function EditClerkForm({
   clerkId,
   initial,
 }: {
   clerkId: number;
-  initial: { name: string; email: string; cpf: string };
+  initial: {
+    name: string;
+    email: string;
+    cpf: string;
+    rg: string | null;
+    phone: string | null;
+    birthDate: string | null;
+  };
 }) {
   const action = useMemo(
     () => updateClerkByManager.bind(null, clerkId),
@@ -58,21 +66,74 @@ export function EditClerkForm({
         )}
       </div>
 
-      <div>
-        <label className={labelClass} htmlFor="cpf">
-          CPF
-        </label>
-        <input
-          className={inputClass}
-          id="cpf"
-          name="cpf"
-          defaultValue={initial.cpf}
-          placeholder="000.000.000-00"
-          required
-        />
-        {state?.fieldErrors?.cpf && (
-          <p className="mt-1 text-xs text-red-600">{state.fieldErrors.cpf[0]}</p>
-        )}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label className={labelClass} htmlFor="cpf">
+            CPF
+          </label>
+          <input
+            className={inputClass}
+            id="cpf"
+            name="cpf"
+            defaultValue={initial.cpf}
+            placeholder="000.000.000-00"
+            required
+          />
+          {state?.fieldErrors?.cpf && (
+            <p className="mt-1 text-xs text-red-600">{state.fieldErrors.cpf[0]}</p>
+          )}
+        </div>
+        <div>
+          <label className={labelClass} htmlFor="rg">
+            RG
+          </label>
+          <input
+            className={inputClass}
+            id="rg"
+            name="rg"
+            defaultValue={initial.rg ?? ""}
+            placeholder="Número do RG"
+          />
+          {state?.fieldErrors?.rg && (
+            <p className="mt-1 text-xs text-red-600">{state.fieldErrors.rg[0]}</p>
+          )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label className={labelClass} htmlFor="phone">
+            Telefone
+          </label>
+          <input
+            className={inputClass}
+            id="phone"
+            name="phone"
+            type="tel"
+            defaultValue={initial.phone ? formatPhone(initial.phone) : ""}
+            placeholder="(XX) 9XXXX-XXXX"
+          />
+          {state?.fieldErrors?.phone && (
+            <p className="mt-1 text-xs text-red-600">{state.fieldErrors.phone[0]}</p>
+          )}
+        </div>
+        <div>
+          <label className={labelClass} htmlFor="birthDate">
+            Data de nascimento
+          </label>
+          <input
+            className={inputClass}
+            id="birthDate"
+            name="birthDate"
+            type="date"
+            defaultValue={initial.birthDate ?? ""}
+          />
+          {state?.fieldErrors?.birthDate && (
+            <p className="mt-1 text-xs text-red-600">
+              {state.fieldErrors.birthDate[0]}
+            </p>
+          )}
+        </div>
       </div>
 
       {state?.error && (

@@ -14,6 +14,7 @@ import {
   stores,
 } from "@/lib/db/schema";
 import { requireAdmin } from "@/lib/dal";
+import { onlyDigits } from "@/lib/format";
 import {
   adminCreateSchema,
   clerkUpdateSchema,
@@ -22,6 +23,24 @@ import {
   storeCreateSchema,
   storeUpdateSchema,
 } from "@/lib/validators";
+
+function normalizePhone(value: string | undefined): string | null {
+  if (!value) return null;
+  const digits = onlyDigits(value);
+  if (digits.length !== 10 && digits.length !== 11) return null;
+  return digits;
+}
+
+function normalizeBirthDate(value: string | undefined): string | null {
+  if (!value) return null;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  return value;
+}
+
+function normalizeRg(value: string | undefined): string | null {
+  const trimmed = value?.trim();
+  return trimmed && trimmed.length > 0 ? trimmed : null;
+}
 
 export type AdminFormState = {
   error?: string;
@@ -304,6 +323,9 @@ export async function adminUpdateClerk(
     name: formData.get("name"),
     email: formData.get("email"),
     cpf: formData.get("cpf"),
+    rg: formData.get("rg"),
+    phone: formData.get("phone"),
+    birthDate: formData.get("birthDate"),
   });
   if (!parsed.success) {
     return { fieldErrors: parsed.error.flatten().fieldErrors };
@@ -359,6 +381,9 @@ export async function adminUpdateClerk(
       name: parsed.data.name,
       email: parsed.data.email,
       cpf: parsed.data.cpf,
+      rg: normalizeRg(parsed.data.rg),
+      phone: normalizePhone(parsed.data.phone),
+      birthDate: normalizeBirthDate(parsed.data.birthDate),
       pixKey,
       isManager: wantsManager,
       isApproved: wantsApproved,
