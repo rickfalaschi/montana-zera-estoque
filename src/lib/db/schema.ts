@@ -10,6 +10,7 @@ import {
   text,
   timestamp,
   unique,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 export const stores = pgTable("stores", {
@@ -48,7 +49,12 @@ export const clerks = pgTable(
       .notNull()
       .defaultNow(),
   },
-  (t) => [index("clerks_store_id_idx").on(t.storeId)]
+  (t) => [
+    index("clerks_store_id_idx").on(t.storeId),
+    uniqueIndex("clerks_one_manager_per_store_idx")
+      .on(t.storeId)
+      .where(sql`${t.isManager} = true`),
+  ]
 );
 
 export const products = pgTable(

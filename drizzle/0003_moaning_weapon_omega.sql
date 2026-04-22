@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "clerks_one_manager_per_store_idx" ON "clerks" USING btree ("store_id") WHERE "clerks"."is_manager" = true;

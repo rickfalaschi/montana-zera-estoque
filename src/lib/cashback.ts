@@ -1,8 +1,8 @@
-import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { asc, desc, eq, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { cashbackPayments, clerks, saleItems, sales, stores } from "@/lib/db/schema";
 
-// Taxa do bônus de gerência: 5% sobre as vendas dos balconistas (não-gerentes) da loja.
+// Taxa do bônus de gerência: 5% sobre TODAS as vendas da loja (inclusive as do próprio gerente).
 // Em centavos: 5% de (points * 100) = points * 5.
 export const MANAGER_BONUS_RATE = 0.05;
 export const MANAGER_BONUS_CENTS_PER_POINT = 5;
@@ -68,14 +68,12 @@ export async function getClerkCashbacks(
 
   const teamByMonth = new Map<string, number>();
   if (clerk.isManager) {
+    // Pool do bônus = TODAS as vendas da loja (inclusive as do próprio gerente).
     const teamRows = await db
       .select({ year: yearExpr, month: monthExpr, points: pointsExpr })
       .from(sales)
       .innerJoin(saleItems, eq(saleItems.saleId, sales.id))
-      .innerJoin(clerks, eq(clerks.id, sales.clerkId))
-      .where(
-        and(eq(clerks.storeId, clerk.storeId), eq(clerks.isManager, false))
-      )
+      .where(eq(sales.storeId, clerk.storeId))
       .groupBy(yearExpr, monthExpr);
     for (const r of teamRows) {
       teamByMonth.set(`${r.year}-${r.month}`, r.points);
@@ -182,7 +180,7 @@ export async function getAllCashbacks(): Promise<AdminCashback[]> {
       monthExpr
     );
 
-  // Pool da equipe por loja por mês (apenas balconistas não-gerentes)
+  // Pool do bônus por loja por mês = TODAS as vendas da loja (inclusive do próprio gerente).
   const teamPoolRows = await db
     .select({
       storeId: sales.storeId,
@@ -192,8 +190,6 @@ export async function getAllCashbacks(): Promise<AdminCashback[]> {
     })
     .from(sales)
     .innerJoin(saleItems, eq(saleItems.saleId, sales.id))
-    .innerJoin(clerks, eq(clerks.id, sales.clerkId))
-    .where(eq(clerks.isManager, false))
     .groupBy(sales.storeId, yearExpr, monthExpr);
 
   const teamPool = new Map<string, number>();
