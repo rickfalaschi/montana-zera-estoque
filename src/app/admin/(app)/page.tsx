@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { count, eq, sql } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { cashbackPayments, clerks, products, saleItems, sales, stores } from "@/lib/db/schema";
+import { clerks, products, sales, stores } from "@/lib/db/schema";
+import { getMonthlySummaries } from "@/lib/cashback";
 import { card, eyebrow } from "@/lib/ui";
 import { formatBRL } from "@/lib/format";
 
@@ -14,28 +15,20 @@ export default async function AdminDashboardPage() {
     [pendingCount],
     [salesCount],
     [productsCount],
-    [pointsAgg],
-    [paidAgg],
+    summaries,
   ] = await Promise.all([
     db.select({ count: count() }).from(stores),
     db.select({ count: count() }).from(clerks),
     db.select({ count: count() }).from(clerks).where(eq(clerks.isApproved, false)),
     db.select({ count: count() }).from(sales),
     db.select({ count: count() }).from(products).where(eq(products.active, true)),
-    db
-      .select({
-        totalPoints: sql<number>`COALESCE(SUM(${saleItems.quantity} * ${saleItems.pointsEach}), 0)::int`,
-      })
-      .from(saleItems),
-    db
-      .select({
-        paidCents: sql<number>`COALESCE(SUM(${cashbackPayments.amountCents}), 0)::int`,
-      })
-      .from(cashbackPayments),
+    getMonthlySummaries(),
   ]);
 
-  const totalCashbackCents = pointsAgg.totalPoints * 100;
-  const pendingCents = totalCashbackCents - paidAgg.paidCents;
+  // Totais incluem o bônus de 5% dos gerentes sobre a equipe.
+  const totalCashbackCents = summaries.reduce((acc, s) => acc + s.totalCents, 0);
+  const paidCents = summaries.reduce((acc, s) => acc + s.paidCents, 0);
+  const pendingCents = totalCashbackCents - paidCents;
 
   const navCards = [
     { label: "Lojas ativas", value: storesCount.count, href: "/admin/lojas" },
@@ -106,7 +99,7 @@ export default async function AdminDashboardPage() {
             Pago até agora
           </p>
           <p className="mt-3 text-4xl font-black tracking-tight text-[#027D04]">
-            {formatBRL(paidAgg.paidCents)}
+            {formatBRL(paidCents)}
           </p>
           <p className="mt-2 text-xs text-zinc-500">Pagamentos confirmados pela equipe.</p>
         </div>

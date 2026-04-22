@@ -95,9 +95,18 @@ export default async function PainelPage() {
           <p className="mt-2 text-4xl font-black tracking-tight">
             {formatBRL(currentMonth?.amountCents ?? 0)}
           </p>
-          <p className="mt-2 text-xs text-white/75">
-            {currentMonth?.points ?? 0} pontos acumulados. Fecha no dia 1º do próximo mês.
-          </p>
+          {clerk.isManager && (currentMonth?.bonusCents ?? 0) > 0 ? (
+            <p className="mt-2 text-xs text-white/85">
+              {formatBRL(currentMonth?.ownCents ?? 0)} das suas vendas +{" "}
+              {formatBRL(currentMonth?.bonusCents ?? 0)} de bônus gerente (5% de{" "}
+              {currentMonth?.teamPoints ?? 0} pts da equipe).
+            </p>
+          ) : (
+            <p className="mt-2 text-xs text-white/75">
+              {currentMonth?.points ?? 0} pontos acumulados. Fecha no dia 1º do próximo
+              mês.
+            </p>
+          )}
         </div>
         <div className={card}>
           <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
@@ -125,6 +134,12 @@ export default async function PainelPage() {
             <h2 className={sectionTitle}>Cashback por mês</h2>
             <p className="mt-1 text-sm text-zinc-500">
               O valor de cada mês fica disponível no primeiro dia do mês seguinte.
+              {clerk.isManager && (
+                <>
+                  {" "}Como gerente, você recebe <strong>5% de bônus</strong> sobre
+                  o cashback da equipe da sua loja.
+                </>
+              )}
             </p>
           </div>
         </div>
@@ -133,15 +148,16 @@ export default async function PainelPage() {
             <thead>
               <tr className={trClass}>
                 <th className={thClass}>Período</th>
-                <th className={thClass}>Pontos</th>
-                <th className={thClass}>Valor</th>
+                <th className={thClass}>Pontos próprios</th>
+                {clerk.isManager && <th className={thClass}>Bônus gerente</th>}
+                <th className={thClass}>Valor total</th>
                 <th className={thClass}>Status</th>
               </tr>
             </thead>
             <tbody>
               {cashbacks.length === 0 && (
                 <tr>
-                  <td className={tdClass} colSpan={4}>
+                  <td className={tdClass} colSpan={clerk.isManager ? 5 : 4}>
                     Ainda não há vendas registradas.
                   </td>
                 </tr>
@@ -165,8 +181,31 @@ export default async function PainelPage() {
                     <td className={`${tdClass} font-semibold`}>
                       {formatPeriod(c.year, c.month)}
                     </td>
-                    <td className={tdClass}>{c.points}</td>
-                    <td className={`${tdClass} font-semibold`}>{formatBRL(c.amountCents)}</td>
+                    <td className={tdClass}>
+                      {c.points}
+                      <span className="block text-xs text-zinc-500">
+                        {formatBRL(c.ownCents)}
+                      </span>
+                    </td>
+                    {clerk.isManager && (
+                      <td className={tdClass}>
+                        {c.teamPoints > 0 ? (
+                          <>
+                            <span className="font-semibold">
+                              {formatBRL(c.bonusCents)}
+                            </span>
+                            <span className="block text-xs text-zinc-500">
+                              5% de {c.teamPoints} pts da equipe
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-xs text-zinc-400">—</span>
+                        )}
+                      </td>
+                    )}
+                    <td className={`${tdClass} font-bold`}>
+                      {formatBRL(c.amountCents)}
+                    </td>
                     <td className={tdClass}>{status}</td>
                   </tr>
                 );

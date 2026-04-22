@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCashbacksForMonth } from "@/lib/cashback";
 import {
+  badgeBrand,
   badgeSuccess,
   badgeWarning,
   buttonSecondary,
@@ -103,8 +104,9 @@ export default async function MonthDetailPage({
                 <th className={thClass}>Balconista</th>
                 <th className={thClass}>Loja</th>
                 <th className={thClass}>Chave Pix</th>
-                <th className={thClass}>Pontos</th>
-                <th className={thClass}>Valor</th>
+                <th className={thClass}>Pontos próprios</th>
+                <th className={thClass}>Bônus gerente</th>
+                <th className={thClass}>Valor total</th>
                 <th className={thClass}>Status</th>
                 <th className={thClass}></th>
               </tr>
@@ -117,16 +119,19 @@ export default async function MonthDetailPage({
                 return (
                 <tr key={r.clerkId} className={trClass}>
                   <td className={tdClass}>
-                    <Link
-                      href={vendasHref}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-semibold text-zinc-900 hover:text-[#A80000] hover:underline dark:text-white"
-                      title={`Abrir vendas de ${r.clerkName} em ${formatPeriod(r.year, r.month)} em nova aba`}
-                    >
-                      {r.clerkName}
-                      <span className="ml-1 text-xs text-zinc-400">↗</span>
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      <Link
+                        href={vendasHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-semibold text-zinc-900 hover:text-[#A80000] hover:underline dark:text-white"
+                        title={`Abrir vendas de ${r.clerkName} em ${formatPeriod(r.year, r.month)} em nova aba`}
+                      >
+                        {r.clerkName}
+                        <span className="ml-1 text-xs text-zinc-400">↗</span>
+                      </Link>
+                      {r.isManager && <span className={badgeBrand}>Gerente</span>}
+                    </div>
                   </td>
                   <td className={tdClass}>{r.storeName}</td>
                   <td className={tdClass}>
@@ -138,8 +143,31 @@ export default async function MonthDetailPage({
                       </span>
                     )}
                   </td>
-                  <td className={tdClass}>{r.points}</td>
-                  <td className={tdClass}>{formatBRL(r.amountCents)}</td>
+                  <td className={tdClass}>
+                    {r.points}
+                    <span className="block text-xs text-zinc-500">
+                      {formatBRL(r.ownCents)}
+                    </span>
+                  </td>
+                  <td className={tdClass}>
+                    {r.isManager ? (
+                      r.teamPoints > 0 ? (
+                        <>
+                          <span className="font-semibold">
+                            {formatBRL(r.bonusCents)}
+                          </span>
+                          <span className="block text-xs text-zinc-500">
+                            5% de {r.teamPoints} pts da equipe
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-xs text-zinc-400">sem equipe no mês</span>
+                      )
+                    ) : (
+                      <span className="text-xs text-zinc-400">—</span>
+                    )}
+                  </td>
+                  <td className={`${tdClass} font-bold`}>{formatBRL(r.amountCents)}</td>
                   <td className={tdClass}>
                     {r.isPaid ? (
                       <span className={badgeSuccess}>
