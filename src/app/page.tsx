@@ -286,12 +286,6 @@ export default function Home() {
           <p className="text-xs uppercase tracking-[0.2em] text-white/50">
             Operação Zera Estoque — plataforma de cashback
           </p>
-          <Link
-            href="/admin/login"
-            className="text-xs text-white/50 underline-offset-4 hover:text-white/80 hover:underline"
-          >
-            Acesso Montana
-          </Link>
         </div>
       </footer>
     </div>
