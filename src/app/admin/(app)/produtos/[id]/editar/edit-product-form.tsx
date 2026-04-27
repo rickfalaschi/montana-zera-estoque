@@ -42,9 +42,11 @@ export function EditProductForm({
           name="points"
           type="number"
           min={0}
+          step={0.5}
           defaultValue={points}
           required
         />
+        <p className="mt-1 text-xs text-zinc-500">Aceita meio ponto (ex: 0.5, 1, 1.5)</p>
         {state?.fieldErrors?.points && (
           <p className="mt-1 text-xs text-red-600">{state.fieldErrors.points[0]}</p>
         )}

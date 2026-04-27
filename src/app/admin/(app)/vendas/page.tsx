@@ -124,7 +124,7 @@ export default async function AdminSalesPage({
       storeId: sales.storeId,
       clerkName: clerks.name,
       storeName: stores.name,
-      points: sql<number>`COALESCE(SUM(${saleItems.quantity} * ${saleItems.pointsEach}), 0)::int`,
+      points: sql<number>`COALESCE(SUM(${saleItems.quantity} * ${saleItems.pointsEach}), 0)::float8`,
       items: sql<number>`COALESCE(SUM(${saleItems.quantity}), 0)::int`,
     })
     .from(sales)

@@ -80,7 +80,12 @@ export const storeCreateSchema = z.object({
 
 export const productSchema = z.object({
   name: z.string().trim().min(2, "Informe o nome"),
-  points: z.coerce.number().int().min(0, "Pontos devem ser positivos"),
+  points: z.coerce
+    .number()
+    .min(0, "Pontos devem ser positivos")
+    .refine((v) => Math.round(v * 2) === v * 2, {
+      message: "Use múltiplos de 0,5 (ex: 1, 1.5, 2, 2.5)",
+    }),
   active: z.coerce.boolean().optional(),
 });
 
