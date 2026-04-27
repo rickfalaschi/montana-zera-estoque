@@ -26,7 +26,7 @@ export default async function ListSalesPage() {
       id: sales.id,
       createdAt: sales.createdAt,
       clerkName: clerks.name,
-      points: sql<number>`COALESCE(SUM(${saleItems.quantity} * ${saleItems.pointsEach}), 0)::int`,
+      points: sql<number>`COALESCE(SUM(${saleItems.quantity} * ${saleItems.pointsEach}), 0)::float8`,
       items: sql<number>`COALESCE(SUM(${saleItems.quantity}), 0)::int`,
     })
     .from(sales)

@@ -56,7 +56,7 @@ export default async function StoreDetailPage({
     .limit(1);
   if (!store) notFound();
 
-  const pointsExpr = sql<number>`COALESCE(SUM(${saleItems.quantity} * ${saleItems.pointsEach}), 0)::int`;
+  const pointsExpr = sql<number>`COALESCE(SUM(${saleItems.quantity} * ${saleItems.pointsEach}), 0)::float8`;
 
   const [
     [manager],

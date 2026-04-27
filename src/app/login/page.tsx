@@ -17,20 +17,12 @@ export default async function LoginPage({
       title="Entrar na plataforma"
       subtitle="Acesso de balconistas e gerentes de loja."
       footer={
-        <>
-          <p>
-            Ainda não tem cadastro?{" "}
-            <Link href="/cadastro" className="font-bold text-[#027D04] hover:underline">
-              Cadastre-se
-            </Link>
-          </p>
-          <p className="mt-2 text-xs text-zinc-500">
-            Equipe Montana?{" "}
-            <Link href="/admin/login" className="underline-offset-4 hover:underline">
-              Acesso administrativo
-            </Link>
-          </p>
-        </>
+        <p>
+          Ainda não tem cadastro?{" "}
+          <Link href="/cadastro" className="font-bold text-[#027D04] hover:underline">
+            Cadastre-se
+          </Link>
+        </p>
       }
     >
       {resetOk && (

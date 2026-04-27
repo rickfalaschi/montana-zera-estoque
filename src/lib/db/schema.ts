@@ -5,6 +5,7 @@ import {
   date,
   index,
   integer,
+  numeric,
   pgTable,
   serial,
   text,
@@ -62,7 +63,7 @@ export const products = pgTable(
   {
     id: serial("id").primaryKey(),
     name: text("name").notNull(),
-    points: integer("points").notNull(),
+    points: numeric("points", { precision: 10, scale: 2, mode: "number" }).notNull(),
     active: boolean("active").notNull().default(true),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
@@ -106,7 +107,11 @@ export const saleItems = pgTable(
       .notNull()
       .references(() => products.id, { onDelete: "restrict" }),
     quantity: integer("quantity").notNull(),
-    pointsEach: integer("points_each").notNull(),
+    pointsEach: numeric("points_each", {
+      precision: 10,
+      scale: 2,
+      mode: "number",
+    }).notNull(),
   },
   (t) => [
     index("sale_items_sale_id_idx").on(t.saleId),

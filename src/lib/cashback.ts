@@ -52,7 +52,7 @@ export async function getClerkCashbacks(
 
   const yearExpr = sql<number>`EXTRACT(YEAR FROM ${sales.createdAt})::int`;
   const monthExpr = sql<number>`EXTRACT(MONTH FROM ${sales.createdAt})::int`;
-  const pointsExpr = sql<number>`SUM(${saleItems.quantity} * ${saleItems.pointsEach})::int`;
+  const pointsExpr = sql<number>`SUM(${saleItems.quantity} * ${saleItems.pointsEach})::float8`;
 
   const ownRows = await db
     .select({ year: yearExpr, month: monthExpr, points: pointsExpr })
@@ -148,7 +148,7 @@ export async function getAllCashbacks(): Promise<AdminCashback[]> {
 
   const yearExpr = sql<number>`EXTRACT(YEAR FROM ${sales.createdAt})::int`;
   const monthExpr = sql<number>`EXTRACT(MONTH FROM ${sales.createdAt})::int`;
-  const pointsExpr = sql<number>`SUM(${saleItems.quantity} * ${saleItems.pointsEach})::int`;
+  const pointsExpr = sql<number>`SUM(${saleItems.quantity} * ${saleItems.pointsEach})::float8`;
 
   // Vendas próprias por balconista por mês
   const ownRows = await db

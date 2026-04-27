@@ -23,7 +23,7 @@ async function getRecentSales(clerkId: number) {
     .select({
       id: sales.id,
       createdAt: sales.createdAt,
-      points: sql<number>`COALESCE(SUM(${saleItems.quantity} * ${saleItems.pointsEach}), 0)::int`,
+      points: sql<number>`COALESCE(SUM(${saleItems.quantity} * ${saleItems.pointsEach}), 0)::float8`,
       items: sql<number>`COALESCE(SUM(${saleItems.quantity}), 0)::int`,
     })
     .from(sales)

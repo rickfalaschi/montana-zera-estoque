@@ -31,6 +31,12 @@ export function formatCep(value: string): string {
   return `${d.slice(0, 5)}-${d.slice(5)}`;
 }
 
+export function formatPoints(value: number | null | undefined): string {
+  if (value == null) return "0";
+  // Inteiro mostra sem decimais; meio ponto mostra com 1 casa.
+  return value % 1 === 0 ? String(value) : value.toFixed(1).replace(".", ",");
+}
+
 export function formatBirthDate(value: string | null | undefined): string {
   if (!value) return "";
   // Aceita "YYYY-MM-DD" (formato armazenado)
